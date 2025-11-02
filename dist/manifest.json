@@ -1,0 +1,9 @@
+{
+  "name": "Trail from last move",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "author": "Ivan Petylo",
+  "homepage_url": "https://github.com/EdwyReed/owlbear-movement-trace",
+  "icon": "/icon.svg",
+  "description": "Apply curve path to trace last move of tokens."
+}
