@@ -21,8 +21,9 @@ const lastPositions = new Map<string, Vector2>();
 
 mountColorPicker();
 
-function hasMoved(prev?: Vector2, next?: Vector2): prev is Vector2 {
-  if (!prev || !next) return false;
+function hasMoved(prev: Vector2 | undefined, next: Vector2 | undefined): next is Vector2 {
+  if (!next) return false;
+  if (!prev) return true;
   return prev.x !== next.x || prev.y !== next.y;
 }
 
@@ -111,7 +112,10 @@ function trackTokenMovement(token: Item) {
   if (!isImage(token) || token.layer !== "CHARACTER") return;
 
   const previous = lastPositions.get(token.id);
-  if (previous && !hasMoved(previous, token.position)) {
+  if (!hasMoved(previous, token.position)) {
+    if (!previous && token.position) {
+      lastPositions.set(token.id, cloneVector(token.position));
+    }
     return;
   }
 
