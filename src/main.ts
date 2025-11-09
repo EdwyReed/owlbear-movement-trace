@@ -6,7 +6,7 @@ import OBR, {
   type Item,
   type Vector2
 } from "@owlbear-rodeo/sdk";
-import { getTrailColor, mountColorPicker } from "./ui";
+import { getTrailColor, getTrailEnabled, mountColorPicker, onTrailEnabledChange } from "./ui";
 
 const EXTENSION_ID = "com.owlbear.trail";
 const CURVE_LAYER = "DRAWING";
@@ -44,6 +44,10 @@ function scheduleFinalize(tokenId: string) {
 }
 
 async function finalizeTrail(tokenId: string) {
+  if (!getTrailEnabled()) {
+    dragPoints.delete(tokenId);
+    return;
+  }
   const points = dragPoints.get(tokenId);
   if (!points || points.length < 2) {
     dragPoints.delete(tokenId);
@@ -110,6 +114,7 @@ function pushPoint(tokenId: string, position: Vector2) {
 
 function trackTokenMovement(token: Item) {
   if (!isImage(token) || token.layer !== "CHARACTER") return;
+  if (!getTrailEnabled()) return;
 
   const previous = lastPositions.get(token.id);
   if (!hasMoved(previous, token.position)) {
@@ -148,5 +153,32 @@ OBR.onReady(() => {
       trackTokenMovement(item);
       recordLastPosition(item);
     });
-  });
+  }, ["position"]);
 });
+
+onTrailEnabledChange((enabled) => {
+  if (!enabled) {
+    dragPoints.clear();
+    debounceTimers.forEach((handle) => window.clearTimeout(handle));
+    debounceTimers.clear();
+    void clearAllTrails();
+  } else {
+    OBR.scene.items
+      .getItems()
+      .then((items) => {
+        items.forEach(recordLastPosition);
+      })
+      .catch((error) => console.error("Failed to refresh positions", error));
+  }
+});
+
+async function clearAllTrails() {
+  const ids = Array.from(lastTrailId.values());
+  lastTrailId.clear();
+  if (ids.length === 0) return;
+  try {
+    await OBR.scene.items.deleteItems(ids);
+  } catch (error) {
+    console.warn("Failed to clear trails", error);
+  }
+}

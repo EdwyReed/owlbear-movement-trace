@@ -19,6 +19,37 @@
   gap: 10px;
 }
 
+.obr-trail-card.is-disabled header,
+.obr-trail-card.is-disabled .presets,
+.obr-trail-card.is-disabled input[type="color"] {
+  opacity: 0.5;
+}
+
+.obr-trail-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.obr-trail-toggle input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+}
+
+.obr-trail-toggle .label {
+  flex: 1;
+}
+
+.obr-trail-toggle-state {
+  font-weight: 600;
+}
+
 .obr-trail-card header {
   display: flex;
   align-items: center;
